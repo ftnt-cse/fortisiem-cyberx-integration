@@ -1,0 +1,63 @@
+<updatePolicys>
+<updatePolicy>
+<vendorName>CyberX</vendorName>
+<instance>CyberX_Inbound</instance>
+<domain/>
+<board/>
+<objectType>Device</objectType>
+<pluginName/>
+<credential custId="0" id="169932653">
+<principal/>
+<password/>
+</credential>
+<description/>
+<mappingConfig>&lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;
+&lt;config&gt;
+    &lt;columns&gt;
+        &lt;column isGroupKey="false" dest="ph_device.access_ip" isPerfobj="false" objectType="Device" overwrite="false" src="ip"/&gt;
+        &lt;column isGroupKey="false" dest="ph_device_type.vendor" isPerfobj="false" objectType="Device" overwrite="false" src="vendor"/&gt;
+        &lt;column isGroupKey="false" dest="ph_device_type.model" isPerfobj="false" objectType="Device" overwrite="false" src="type"/&gt;
+        &lt;column isGroupKey="false" dest="ph_device.name" isPerfobj="false" objectType="Device" overwrite="false" src="name"/&gt;
+        &lt;column isGroupKey="false" dest="ph_device.os_edition" isPerfobj="false" objectType="Device" overwrite="false" src="os"/&gt;
+        &lt;column isGroupKey="false" dest="PROP_PREFIX@@@CyberX Scanner" isPerfobj="false" objectType="Device" overwrite="false" propDisplayName="CyberX Scanner" propType="STRING" src="scanner"&gt;
+            &lt;dftValue&gt;&lt;/dftValue&gt;
+        &lt;/column&gt;
+        &lt;column isGroupKey="false" dest="PROP_PREFIX@@@CyberX DHCP" isPerfobj="false" objectType="Device" overwrite="false" propDisplayName="CyberX DHCP" propType="STRING" src="dhcp"&gt;
+            &lt;dftValue&gt;&lt;/dftValue&gt;
+        &lt;/column&gt;
+        &lt;column isGroupKey="false" dest="PROP_PREFIX@@@CyberX ID" isPerfobj="false" objectType="Device" overwrite="false" propDisplayName="CyberX ID" propType="STRING" src="id"&gt;
+            &lt;dftValue&gt;&lt;/dftValue&gt;
+        &lt;/column&gt;
+        &lt;column isGroupKey="false" dest="PROP_PREFIX@@@CyberX Engineering Station" isPerfobj="false" objectType="Device" overwrite="false" propDisplayName="CyberX Engineering Station" propType="STRING" src="engineeringStation"&gt;
+            &lt;dftValue&gt;&lt;/dftValue&gt;
+        &lt;/column&gt;
+        &lt;column isGroupKey="false" dest="ph_device.discover_method" isPerfobj="false" objectType="Device" overwrite="false" src="method"/&gt;
+        &lt;column isGroupKey="false" dest="PROP_PREFIX@@@Device MAC Address" isPerfobj="false" objectType="Device" overwrite="false" propDisplayName="Device MAC Address" propType="STRING" src="mac"&gt;
+            &lt;dftValue&gt;&lt;/dftValue&gt;
+        &lt;/column&gt;
+        &lt;column isGroupKey="false" dest="ph_device.image_file" isPerfobj="false" objectType="Device" overwrite="false" src="firmware"/&gt;
+        &lt;column isGroupKey="false" dest="PROP_PREFIX@@@CyberX Protocols" isPerfobj="false" objectType="Device" overwrite="false" propDisplayName="CyberX Protocols" propType="STRING" src="protocols"&gt;
+            &lt;dftValue&gt;&lt;/dftValue&gt;
+        &lt;/column&gt;
+    &lt;/columns&gt;
+    &lt;contents/&gt;
+&lt;/config&gt;
+</mappingConfig>
+<target/>
+<groups/>
+<groupDns/>
+<maxNumber>50</maxNumber>
+<toSelf>true</toSelf>
+<afterDisc>false</afterDisc>
+<csvPath>/tmp/cyberx_devices.csv</csvPath>
+<orgMappings/>
+<inTimeRange>24</inTimeRange>
+<project/>
+<jiraIssueType/>
+<jiraMapping/>
+<rbaServiceName/>
+<rbaPayloadName/>
+<rbaRules/>
+</updatePolicy>
+</updatePolicys>
+

@@ -1,0 +1,25 @@
+{
+  "vendor": "VMWARE INC.",
+  "name": "192.168.1.9",
+  "hasDynamicAddress": false,
+  "firmware": null,
+  "id": 1,
+  "macAddresses": [
+    "00:0c:29:b3:fb:b5"
+  ],
+  "authorized": true,
+  "ipAddresses": [
+    "192.168.1.9"
+  ],
+  "engineeringStation": false,
+  "type": "Unknown",
+  "operatingSystem": null,
+  "protocols": [
+    {
+      "addresses": [],
+      "id": 21,
+      "name": "Netbios Name Service"
+    }
+  ],
+  "scanner": false
+}

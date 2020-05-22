@@ -1,0 +1,33 @@
+ip,vendor,type,name,os,mac,firmware,protocols,scanner,dhcp,id,engineeringStation,method
+192.168.1.9,VMware,Generic,192.168.1.9,,00:0c:29:b3:fb:b5,Netbios Name Service,false,false,1,false,CyberX_API
+10.20.30.230,VMware,Workstation,FORTINETEWSHMI,Windows 10,00:0c:29:5d:6c:d4,ICMP;DNS;MODBUS;Netbios Datagram Service;SMB;HTTP;Netbios Name Service,false,false,3,false,CyberX_API
+10.20.30.6,VMware,HMI,172.16.33.50,Windows 10,00:0c:29:8b:72:09,SMB;Netbios Datagram Service,false,false,8,false,CyberX_API
+10.20.30.29,VMware,Server,10.20.30.30,Windows Server 2012 R2,00:0c:29:e0:8f:95,DNS;Netbios Name Service;ICMP;SMB;Netbios Datagram Service,false,false,11,false,CyberX_API
+10.20.30.1,Fortinet,FortiOS,10.20.30.1,,e8:1c:ba:bc:8f:ea,SYSLOG;SNMP;ICMP,false,false,12,false,CyberX_API
+208.91.112.53,Generic,Internet,Internet,,,,false,false,13,false,CyberX_API
+192.168.14.7,Generic,HMI,192.168.14.7,,,ICMP;RPC;SMB,false,false,14,false,CyberX_API
+192.168.1.65,Generic,Server,192.168.1.65,,,ICMP;SNMP,false,false,15,false,CyberX_API
+192.168.81.101,Generic,Generic,192.168.81.101,,,ICMP,false,false,16,false,CyberX_API
+10.20.30.31,VMware,Generic,10.20.30.31,,00:0c:29:15:d0:30,SNMP,false,false,17,false,CyberX_API
+10.20.30.170,VMware,Generic,10.20.30.170,,00:0c:29:b0:5b:ec,DNS,false,false,18,false,CyberX_API
+192.168.81.7,Generic,Generic,192.168.81.7,,,ICMP,false,false,19,false,CyberX_API
+10.20.30.70,VMware,Generic,10.20.30.70,,00:0c:29:11:ce:76,ICMP,false,false,20,false,CyberX_API
+192.168.81.100,Generic,Generic,192.168.81.100,,,ICMP,false,false,21,false,CyberX_API
+172.16.33.60,Generic,HMI,172.16.33.60,,,MODBUS,false,false,22,false,CyberX_API
+192.168.81.40,Generic,Generic,192.168.81.40,,,ICMP,false,false,23,false,CyberX_API
+192.168.81.17,Generic,Generic,192.168.81.17,,,ICMP,false,false,24,false,CyberX_API
+10.20.30.30,VMware,Generic,10.20.30.30,,00:0c:29:63:1f:51,DNS,false,false,25,false,CyberX_API
+192.168.81.1,Generic,Generic,192.168.81.1,,,ICMP,false,false,26,false,CyberX_API
+192.168.81.5,Generic,Generic,192.168.81.5,,,ICMP,false,false,27,false,CyberX_API
+192.168.81.9,Generic,Generic,192.168.81.9,,,ICMP,false,false,28,false,CyberX_API
+192.168.1.1,Generic,Generic,192.168.1.1,,,,false,false,29,false,CyberX_API
+10.20.30.160,VMware,Server,10.20.30.160,,00:0c:29:20:25:e6,DNS;ICMP,false,false,30,false,CyberX_API
+10.20.30.4,TELEMECANIQUE ELECTRIQUE,PLC,10.20.30.4,,00:80:f4:4c:a8:3c,V1.0,MODBUS;ICMP,false,false,31,false,CyberX_API
+192.168.81.3,Generic,Generic,192.168.81.3,,,ICMP,false,false,32,false,CyberX_API
+192.168.81.4,Generic,Generic,192.168.81.4,,,ICMP,false,false,33,false,CyberX_API
+192.168.81.14,Generic,Generic,192.168.81.14,,,ICMP,false,false,34,false,CyberX_API
+192.168.81.20,Generic,Generic,192.168.81.20,,,ICMP,false,false,35,false,CyberX_API
+10.20.30.20,MITAC INTERNATIONAL CORP.,Server,10.20.30.20,,00:22:4d:d9:3b:72,ICMP,false,false,37,false,CyberX_API
+192.168.14.1,Generic,Generic,192.168.14.1,,,ICMP,false,false,38,false,CyberX_API
+172.16.33.50,Generic,HMI,172.16.33.50,,,ICMP;MODBUS,false,false,39,false,CyberX_API
+192.168.81.2,Generic,PLC,192.168.81.2,,,RPC;SMB;ICMP,false,false,40,false,CyberX_API

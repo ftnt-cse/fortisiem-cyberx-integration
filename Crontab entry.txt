@@ -1,0 +1,4 @@
+
+Modify crontab on Fortisiem and add the below entry
+
+*/45 * * * * /root/chrisd/cyberx_api_to_csv.sh

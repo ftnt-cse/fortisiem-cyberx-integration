@@ -1,0 +1,163 @@
+<!-- Cyber X Parser
+cdurkin@fortinet.com, US ATP Team
+V0.2, Februrary 28th 2020
+Requires custom attr
+controllerIp -> Controller IP -> IP
+-->
+<patternDefinitions>
+<pattern name="patStrEndSep"><![CDATA[[^|]*]]></pattern>
+<pattern name="patStrEndDot"><![CDATA[[\d+\.\d+\.\d+\.\d+,\s]*\.\.\.]]></pattern>
+</patternDefinitions>
+<!-- Test Event
+<9>Feb 22 13:04:33 CyberX_Console CEF:0|CyberX|CyberX Security Platform|2.8.1|CyberX platform Alert|Unauthorized Internet Connectivity Detected|10|msg=An asset defined in your internal network is communicating with addresses on the Internet. These addresses have not been learned by Cyberx as valid addresses. Asset 172.16.33.50 communicated with addresses shown in External Addresses. Verify that this asset is properly configured. For similar incidents and additional information, please refer to CyberX platform. app=GENERIC cs1Label=Severity Description cs1=Critical cs2Label=Alert Type cs2=Policy Violation start=Feb 22 2020 08:04:33 reason=Alert Detected dvchost=CyberX Console src=172.16.33.50 smac=00:0c:29:8a:84:1b dst=152.3.102.53
+-->
+<eventFormatRecognizer><![CDATA[CEF:\d+\|CyberX\|(?:<:patStrEndSep>)\|\d+\.\d+\.\d+\|CyberX platform Alert]]></eventFormatRecognizer>
+<parsingInstructions>
+<collectFieldsByRegex src="$_rawmsg">
+<regex><![CDATA[<:gPatSyslogPRI>?\s*<_mon:gPatMon>\s+<_day:gPatDay>\s+<_time:gPatTime>\s+(?:<reptDevIpAddr:gPatIpAddr>|<reptDevName:gPatHostName>)\s+CEF\s*:<_body:gPatMesgBody>]]></regex>
+</collectFieldsByRegex>
+<setEventAttribute attr="deviceTime">toDateTime($_mon, $_day, $_time)</setEventAttribute>
+<setEventAttribute attr="eventType">CyberX-Generic</setEventAttribute>
+<when test="matches($_body, '\\\|')">
+<setEventAttribute attr="_body">replaceStrInStr($_body, "\|", "::TEMP::")</setEventAttribute>
+</when>
+<setEventAttribute attr="_body">replaceStrInStr($_body, "|", "::SEP::")</setEventAttribute>
+<when test="matches($_body, '::TEMP::')">
+<setEventAttribute attr="_body">replaceStrInStr($_body, "::TEMP::", "|")</setEventAttribute>
+</when>
+<collectAndSetAttrByPos sep="::SEP::" src="$_body">
+<attrPosMap attr="_version" pos="1"/>
+<attrPosMap attr="_vendor" pos="2"/>
+<attrPosMap attr="appName" pos="3"/>
+<attrPosMap attr="appVersion" pos="4"/>
+<attrPosMap attr="threatCategory" pos="5"/>
+<attrPosMap attr="alertCategory" pos="6"/>
+<attrPosMap attr="_severity" pos="7"/>
+<attrPosMap attr="_extension" pos="8"/>
+</collectAndSetAttrByPos>
+<collectFieldsByKeyValuePair kvsep="=" sep=" " src="$_extension">
+<attrKeyMap attr="msg" key="msg"/>
+<attrKeyMap attr="appName" key="app"/>
+<attrKeyMap attr="_proto" key="protocol"/>
+<attrKeyMap attr="_sev" key="severity"/>
+<attrKeyMap attr="type" key="type"/>
+<attrKeyMap attr="type" key="cs2"/>
+<attrKeyMap attr="_startTime" key="start"/>
+<attrKeyMap attr="_endTime" key="end"/>
+<attrKeyMap attr="srcIpAddr" key="src_ip"/>
+<attrKeyMap attr="srcIpAddr" key="src"/>
+<attrKeyMap attr="srcMACAddr" key="src_mac"/>
+<attrKeyMap attr="destIpAddr" key="dst"/>
+<attrKeyMap attr="destIpAddr" key="dst_ip"/>
+<attrKeyMap attr="destMACAddr" key="dst_mac"/>
+<attrKeyMap attr="errReason" key="reason"/>
+<attrKeyMap attr="vendorSeverity" key="severity"/>
+</collectFieldsByKeyValuePair>
+<when test="exist type">
+<setEventAttribute attr="type">replaceStringByRegex($type, " ", "-")</setEventAttribute>
+<setEventAttribute attr="eventType">combineMsgId("CyberX-", $type)</setEventAttribute>
+</when>
+<when test="exist _endTime">
+<collectFieldsByRegex src="$_endTime">
+<regex><![CDATA[<_mon1:gPatMon>\s+<_day1:gPatDay>\s+<_year1:gPatYear>\s+<_time1:gPatTime>]]></regex>
+</collectFieldsByRegex>
+<setEventAttribute attr="endTime">toDateTime($_mon1, $_day1, $_year1, $_time1)</setEventAttribute>
+</when>
+<when test="exist _startTime">
+<collectFieldsByRegex src="$_startTime">
+<regex><![CDATA[<_mon2:gPatMon>\s+<_day2:gPatDay>\s+<_year2:gPatYear>\s+<_time2:gPatTime>]]></regex>
+</collectFieldsByRegex>
+<setEventAttribute attr="startTime">toDateTime($_mon2, $_day2, $_year2, $_time2)</setEventAttribute>
+</when>
+<when test="exist _proto">
+<setEventAttribute attr="ipProto">convertStrToIntIpProto($_proto)</setEventAttribute>
+</when>
+<choose>
+<when test="$_severity IN '1,2,3,4'">
+<setEventAttribute attr="eventSeverity">1</setEventAttribute>
+</when>
+<when test="$_severity IN '5,6,7,8'">
+<setEventAttribute attr="eventSeverity">6</setEventAttribute>
+</when>
+<when test="$_severity IN '9,10'">
+<setEventAttribute attr="eventSeverity">10</setEventAttribute>
+</when>
+<otherwise>
+<setEventAttribute attr="eventSeverity">1</setEventAttribute>
+</otherwise>
+</choose>
+<!-- Events with extra details required for parsing -->
+<choose>
+<when test="$eventType = 'CyberX-Operational'">
+<choose>
+<!-- <9>Feb 27 23:56:03 CyberX_Console CEF:0|CyberX|CyberX Security Platform|2.8.1|CyberX platform Alert|Traffic Detected on Sensor Interface|1|msg=The sensor resumed detecting network traffic on eth1. app=GENERIC cs1Label=Severity Description cs1=Warning cs2Label=Alert Type cs2=Operational start=Feb 21 2020 18:25:23 reason=Alert Detected dvchost=CyberX Console -->
+<!-- <9>Feb 27 23:56:03 CyberX_Console CEF:0|CyberX|CyberX Security Platform|2.8.1|CyberX platform Alert|No Traffic Detected on Sensor Interface|10|msg=The sensor stopped detecting network traffic on eth1. app=GENERIC cs1Label=Severity Description cs1=Critical cs2Label=Alert Type cs2=Operational start=Feb 21 2020 18:36:58 reason=Alert Detected dvchost=CyberX Console -->
+<when test="$alertCategory IN 'Traffic Detected on Sensor Interface,No Traffic Detected on Sensor Interface'">
+<collectFieldsByRegex src="$msg">
+<regex><![CDATA[The sensor (?:resumed|stopped) detecting network traffic on <intfName:gPatStr>\.]]></regex>
+</collectFieldsByRegex>
+</when>
+<!-- <123>Feb 27 23:56:00 Sensor_Agent CEF:0|CyberX|Sensor Agent|2.3.4|CyberX platform Alert|Controller Stop|1|msg=Device 10.2.1.4 sent a stop command to controller 10.2.1.18 using protocol EtherNet/IP, Class 0x8e (Controller), Service 7 (Stop). These commands are typically used to stop the operation of the controller for maintenance or programming. The controller will stop operating until start command will be sent. protocol=GENERIC severity=Warning type=Operational start=Jul 15 2018 13:54:29 src_ip=10.2.1.4 dst_ip=10.2.1.18 dst_mac=00:0f:48:11:4f:04 -->
+<when test="$alertCategory = 'Controller Stop'">
+<collectFieldsByRegex src="$msg">
+<regex><![CDATA[Device <:gPatIpV4Dot> sent a stop command to controller <controllerIp:gPatIpV4Dot>]]></regex>
+</collectFieldsByRegex>
+</when>
+<!-- <9>Feb 27 23:55:59 CyberX_Console CEF:0|CyberX|CyberX Security Platform|2.8.1|CyberX platform Alert|Suspicion of Unresponsive MODBUS Device|4|msg=Outstation device 10.20.30.4 (Protocol Address 14) seems to be unresponsive to MODBUS requests. app=MODBUS cs1Label=Severity Description cs1=Minor cs2Label=Alert Type cs2=Operational start=Feb 25 2020 22:10:26 reason=Alert Detected dvchost=CyberX Console src=10.20.30.4 smac=00:80:f4:4c:70:bd -->
+<when test="$alertCategory = 'Suspicion of Unresponsive MODBUS Device'">
+<collectFieldsByRegex src="$msg">
+<regex><![CDATA[Outstation device <:gPatIpV4Dot> \(<:gPatSentence>\) seems to be unresponsive to MODBUS requests\.]]></regex>
+</collectFieldsByRegex>
+</when>
+<!-- <9>Feb 27 23:55:54 CyberX_Console CEF:0|CyberX|CyberX Security Platform|2.8.1|CyberX platform Alert|HTTP Client Error|1|msg=An HTTP client sent an invalid request to a server. Client 172.16.33.60 sent an invalid request to server 23.59.246.171. Error code: 403 (Forbidden). app=HTTP cs1Label=Severity Description cs1=Warning cs2Label=Alert Type cs2=Operational start=Feb 26 2020 06:18:22 reason=Alert Detected dvchost=CyberX Console src=23.59.246.171 dst=172.16.33.60 dmac=00:0c:29:b8:4c:04 -->
+<when test="$alertCategory = 'HTTP Client Error'">
+<collectFieldsByRegex src="$msg">
+<regex><![CDATA[An HTTP client sent an invalid request to a server\. Client <:gPatIpV4Dot> sent an invalid request to server <:gPatIpV4Dot>\. Error code: <httpStatusCode:gPatStr>]]></regex>
+</collectFieldsByRegex>
+</when>
+</choose>
+</when>
+<when test="$eventType = 'CyberX-Anomaly'">
+<choose>
+<!-- <9>Feb 27 23:55:59 CyberX_Console CEF:0|CyberX|CyberX Security Platform|2.8.1|CyberX platform Alert|Address Scan Detected|10|msg=Address scan detected. Scanning address: 172.16.33.50 Scanned subnet: 10.20.0.0/16 Scanned addresses: 10.20.30.120, 10.20.30.121, 10.20.30.122, 10.20.30.123, 10.20.30.124, 10.20.30.125, 10.20.30.126, 10.20.30.127, 10.20.30.128, 10.20.30.129... It is recommended to notify the security officer of the incident. app=GENERIC cs1Label=Severity Description cs1=Critical cs2Label=Alert Type cs2=Anomaly start=Feb 25 2020 21:54:45 reason=Alert Detected dvchost=CyberX Console src=172.16.33.50 smac=00:0c:29:8a:84:1b -->
+<when test="$alertCategory = 'Address Scan Detected'">
+<collectFieldsByRegex src="$msg">
+<regex><![CDATA[Address scan detected\.\s+Scanning address:\s+<:gPatIpV4Dot>\s+Scanned subnet:\s+<:gPatStr>\s+Scanned addresses:\s+<destIpAddrList:patStrEndDot>]]></regex>
+</collectFieldsByRegex>
+</when>
+<!-- <9>Feb 27 23:56:03 CyberX_Console CEF:0|CyberX|CyberX Security Platform|2.8.1|CyberX platform Alert|PLC Scan Detected|10|msg=PLC scan detected. Scanning device: 172.16.33.50 Scanned device: 10.20.30.4 Scanned Slave Identifiers: 1,2,3,4,5,6,7,8,9,10... It is recommended to notify the security officer of the incident. app=GENERIC cs1Label=Severity Description cs1=Critical cs2Label=Alert Type cs2=Anomaly start=Feb 21 2020 18:32:23 reason=Alert Detected dvchost=CyberX Console src=172.16.33.50 dst=10.20.30.4 dmac=00:80:f4:4c:70:bd -->
+<when test="$alertCategory = 'PLC Scan Detected'">
+<collectFieldsByRegex src="$msg">
+<regex><![CDATA[PLC scan detected\.\s+Scanning device:\s+<:gPatIpV4Dot>\s+Scanned device:\s+<:gPatIpV4Dot>\s+Scanned Slave Identifiers:\s+<scanStatusDetail:gPatStr>]]></regex>
+</collectFieldsByRegex>
+</when>
+</choose>
+</when>
+<when test="$eventType = 'CyberX-Policy-Violation'">
+<choose>
+<!-- <123>Feb 27 23:56:00 Sensor_Agent CEF:0|CyberX|Sensor Agent|2.3.4|CyberX platform Alert|Unauthorized PLC Programming|10|msg=PLC 10.2.1.88 was programmed by client device 10.2.1.10. For similar incidents and additional information, please refer to CyberX platform. protocol=GENERIC severity=Critical type=Policy Violation start=Jul 15 2018 13:56:49 src_ip=10.2.1.10 dst_ip=170.39.2.12 -->
+<when test="$alertCategory = 'Unauthorized PLC Programming'">
+<collectFieldsByRegex src="$msg">
+<regex><![CDATA[PLC <controllerIp:gPatIpV4Dot> was programmed by client device <:gPatIpV4Dot>\.]]></regex>
+</collectFieldsByRegex>
+</when>
+</choose>
+</when>
+<when test="$eventType = 'CyberX-Malware'">
+<choose>
+<!-- <123>Feb 27 23:56:00 Sensor_Agent CEF:0|CyberX|Sensor Agent|2.3.4|CyberX platform Alert|Suspicion of Malicious Activity (Conficker)|8|msg=Suspicious network activity was detected. Such behavior might be attributed to the Conficker malware. protocol=GENERIC severity=Major type=Malware start=Jul 15 2018 13:50:16 src_ip=10.2.1.22 src_mac=00:0f:33:67:46:fe dst_ip=10.2.1.4 -->
+<when test="matches($alertCategory, '^Suspicion of Malicious Activity')">
+<collectFieldsByRegex src="$alertCategory">
+<regex><![CDATA[Suspicion of Malicious Activity\s+\(<virusName:gPatStr>\)]]></regex>
+</collectFieldsByRegex>
+</when>
+<!-- <123>Feb 27 23:56:00 Sensor_Agent CEF:0|CyberX|Sensor Agent|2.3.4|CyberX platform Alert|Malware detected - WannaCry|10|msg=Illegal SMB message was sent from SMB client 10.2.1.3 to server 10.2.1.12, using a reserved operation not allowed in the protocol. These messages are used by known malware as Double Pulsar backdoor and WannaCry ransomware. protocol=SMB severity=Critical type=Malware start=Jul 15 2018 13:49:39 src_ip=10.2.1.3 dst_ip=10.2.1.12 -->
+<when test="matches($alertCategory, '^Malware detected')">
+<collectFieldsByRegex src="$alertCategory">
+<regex><![CDATA[Malware detected -\s+<virusName:gPatStr>]]></regex>
+</collectFieldsByRegex>
+</when>
+</choose>
+</when>
+</choose>
+</parsingInstructions>
